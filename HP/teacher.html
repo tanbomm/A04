@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>のべおか防災大作戦</title>
+  <link rel="stylesheet" href="styleA.css" />
+  <style>
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      grid-template-rows: auto 1fr auto;
+      gap: 1em;
+      padding: 1em;
+    }
+
+    .image-bottom-left {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 8px;
+      grid-column: 1 / 2;
+      grid-row: 3 / 4;
+    }
+
+    .button-group {
+      grid-column: 1 / 2;
+      grid-row: 4 / 5;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5em;
+    }
+
+    .btn {
+      padding: 0.6em 1.2em;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #f57c00;
+    }
+
+    .controls {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+
+    .controls label {
+      font-weight: bold;
+    }
+
+    .table-area {
+      grid-column: 2 / 3;
+      grid-row: 2 / 4;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+      vertical-align: top;
+      width: 33%;
+    }
+
+    th {
+      background-color: #ffecb3;
+    }
+
+    .cell-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2em;
+      padding: 0;
+      margin: 0;
+    }
+
+    .cell-content select,
+    .cell-content textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .cell-content select {
+      padding: 0.3em;
+      font-size: 1em;
+      margin: 0;
+    }
+
+    .cell-content textarea {
+      resize: vertical;
+      min-height: 40px;
+      font-size: 0.9em;
+      padding: 0.3em;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .score-display {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+      background-color: #fff3cd;
+      border-radius: 5px;
+      padding: 1em;
+      text-align: center;
+      font-size: 2em;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #noPdfMessage {
+      grid-column: 1 / 2;
+      grid-row: 3 / 4;
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>のべおか防災大作戦</h1>
+    <p>じぶんでまもる！みんなでまもる！</p>
+  </header>
+
+  <main>
+    <div class="layout">
+      <div class="controls">
+        <label for="studentSelect">生徒名：</label>
+        <select id="studentSelect">
+          <option value="">選択してください</option>
+        </select>
+      </div>
+
+      <div class="table-area">
+        <table>
+          <tr>
+            <th>主体性</th>
+            <th>思・判・表</th>
+            <th>知・技</th>
+          </tr>
+          <tr>
+            <td>
+              <div class="cell-content">
+                <select>
+                  <option value="">選択</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+                <textarea placeholder="コメントを書く…"></textarea>
+              </div>
+            </td>
+            <td>
+              <div class="cell-content">
+                <select>
+                  <option value="">選択</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+                <textarea placeholder="コメントを書く…"></textarea>
+              </div>
+            </td>
+            <td>
+              <div class="cell-content">
+                <select>
+                  <option value="">選択</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+                <textarea placeholder="コメントを書く…"></textarea>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="score-display">
+        <h2>合計点：<span id="totalScore">--</span> 点</h2>
+      </div>
+
+      <iframe id="timelineViewer" class="image-bottom-left" src="" width="100%" height="300px" style="display: none;"></iframe>
+      <p id="noPdfMessage" style="display: none;">まだタイムラインが作成されていません。</p>
+
+      <div class="button-group">
+        <button class="btn" onclick="saveData()">保存</button>
+        <button class="btn" onclick="history.back()">戻る</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 のべおか防災大作戦</p>
+  </footer>
+
+  <script>
+  const studentSelect = document.getElementById("studentSelect");
+  const tableCells = document.querySelectorAll(".cell-content");
+  const scoreDisplay = document.getElementById("totalScore");
+  const pdfViewer = document.getElementById("timelineViewer");
+  const noPdfMessage = document.getElementById("noPdfMessage");
+
+  let studentsData = [];
+
+  // 生徒データを取得してプルダウンに追加
+  fetch("/api/get-students.php")
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTPエラー: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log("取得した生徒データ:", data);
+      studentsData = data;
+      data.forEach(student => {
+        const option = document.createElement("option");
+        option.value = student.id;
+        option.textContent = student.name;
+        studentSelect.appendChild(option);
+      });
+    })
+    .catch(err => {
+      console.error("生徒データの取得に失敗しました:", err);
+    });
+
+  // 生徒選択時の処理
+  studentSelect.addEventListener("change", () => {
+    const selectedId = parseInt(studentSelect.value);
+    const student = studentsData.find(s => s.id === selectedId);
+
+    if (student) {
+      // 点数表示
+      scoreDisplay.textContent = student.total_score ?? "--";
+
+      // PDF表示
+      if (student.timeline_pdf) {
+        pdfViewer.src = `/timelines/${student.timeline_pdf}`;
+        pdfViewer.style.display = "block";
+        noPdfMessage.style.display = "none";
+      } else {
+        pdfViewer.style.display = "none";
+        noPdfMessage.style.display = "block";
+      }
+
+      // ローカルストレージから評価内容を読み込む
+      const saved = localStorage.getItem(`eval-${student.id}`);
+      if (saved) {
+        const data = JSON.parse(saved);
+        tableCells.forEach((cell, index) => {
+          const select = cell.querySelector("select");
+          const textarea = cell.querySelector("textarea");
+          select.value = data[index]?.score || "";
+          textarea.value = data[index]?.comment || "";
+        });
+      } else {
+        tableCells.forEach(cell => {
+          cell.querySelector("select").value = "";
+          cell.querySelector("textarea").value = "";
+        });
+      }
+    } else {
+      // 生徒が選ばれていない場合
+      scoreDisplay.textContent = "--";
+      pdfViewer.style.display = "none";
+      noPdfMessage.style.display = "block";
+      tableCells.forEach(cell => {
+        cell.querySelector("select").value = "";
+        cell.querySelector("textarea").value = "";
+      });
+    }
+  });
+
+  // 保存ボタンの処理
+  function saveData() {
+    const selectedId = parseInt(studentSelect.value);
+    if (!selectedId) {
+      alert("生徒を選択してください。");
+      return;
+    }
+
+    const data = Array.from(tableCells).map(cell => {
+      return {
+        score: cell.querySelector("select").value,
+        comment: cell.querySelector("textarea").value
+      };
+    });
+
+    localStorage.setItem(`eval-${selectedId}`, JSON.stringify(data));
+    alert("保存しました！");
+  }
+</script>
+
+</body>
+</html>
